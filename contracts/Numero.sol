@@ -73,8 +73,23 @@ contract Nemero is ERC721 {
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        string memory uri = idToTokenUri[tokenId];
-        return abi.encodePacked(_baseURI(),)
+        string memory imageURI = idToTokenUri[tokenId];
+        return string(
+            abi.encodePacked(
+                _baseURI(),
+                Base64.encode(
+                    bytes(
+                        abi.encodePacked(
+                            '{"name": "',
+                            name(),
+                            '","description":"An NFT that can be collected and create next NFT.","image":"',
+                            imageURI,
+                            '"}'
+                        )
+                    )
+                )
+            )
+        );
     }
 
     function checkStatus() public view returns (Status) {
