@@ -2,11 +2,14 @@
 pragma solidity ^0.8.25;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 contract Nemero is ERC721 {
     address private contractOwner;
     uint256 private totalSupply;
     Status private status;
+
+    mapping(uint256 tokenId => string) private idToTokenUri;
 
     enum Status {
         OriginNumberNotYetMinted,
@@ -69,9 +72,16 @@ contract Nemero is ERC721 {
         totalSupply++;
     }
 
-    function tokenURI(uint256 tokenId) public view override returns (string memory) {}
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        string memory uri = idToTokenUri[tokenId];
+        return abi.encodePacked(_baseURI(),)
+    }
 
     function checkStatus() public view returns (Status) {
         return status;
+    }
+
+    function _baseURI() internal pure override returns (string memory) {
+        return "data:application/json;base64,";
     }
 }
