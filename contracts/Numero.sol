@@ -4,7 +4,7 @@ pragma solidity ^0.8.25;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
-contract Nemero is ERC721 {
+contract Numero is ERC721 {
     address private contractOwner;
     uint256 private totalSupply;
     Status private status;
@@ -39,7 +39,11 @@ contract Nemero is ERC721 {
         _;
     }
 
-    constructor() ERC721("Numero", "NMR") {}
+    constructor(string[] memory uris) ERC721("Numero", "NMR") {
+        for (uint256 i = 0; i < 10; i++) {
+            idToTokenUri[i] = uris[i];
+        }
+    }
 
     function mintOriginNumber() public onlyContractOwner onlyAllowMintOriginNumber {
         _safeMint(msg.sender, 1);
