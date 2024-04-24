@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.0;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 contract Numero is ERC721 {
-    address private contractOwner;
-    uint256 private totalSupply;
-    Status private status;
+    address private _contractOwner;
+    uint256 private _totalSupply;
+    Status private _status;
 
     mapping(uint256 tokenId => string) private idToTokenUri;
 
@@ -19,27 +19,28 @@ contract Numero is ERC721 {
     }
 
     modifier onlyContractOwner() {
-        if (msg.sender != contractOwner) {
+        if (msg.sender != _contractOwner) {
             revert("Must be contract owner");
         }
         _;
     }
 
     modifier onlyAllowMintOriginNumber() {
-        if (status != Status.OriginNumberNotYetMinted) {
+        if (_status != Status.OriginNumberNotYetMinted) {
             revert("Origin number not yet minted");
         }
         _;
     }
 
     modifier onlyAllowCreatingNumber() {
-        if (status != Status.CreatingNumber) {
+        if (_status != Status.CreatingNumber) {
             revert("Haven't mint origin numbers or All numbers have been minted");
         }
         _;
     }
 
     constructor(string[] memory uris) ERC721("Numero", "NMR") {
+        _contractOwner = msg.sender;
         for (uint256 i = 0; i < 10; i++) {
             idToTokenUri[i] = uris[i];
         }
@@ -48,8 +49,8 @@ contract Numero is ERC721 {
     function mintOriginNumber() public onlyContractOwner onlyAllowMintOriginNumber {
         _safeMint(msg.sender, 1);
         _safeMint(msg.sender, 2);
-        status = Status.CreatingNumber;
-        totalSupply = 2;
+        _status = Status.CreatingNumber;
+        _totalSupply = 2;
     }
 
     function createNumber(uint256 sireId, uint256 matronId) public onlyAllowCreatingNumber {
@@ -61,9 +62,9 @@ contract Numero is ERC721 {
             revert("Created number is greatet than 9 or already created");
         }
         _safeMint(msg.sender, childId);
-        totalSupply++;
-        if (totalSupply == 9) {
-            status = Status.AllNumberExceptZeroCreated;
+        _totalSupply++;
+        if (_totalSupply == 9) {
+            _status = Status.AllNumberExceptZeroCreated;
         }
     }
 
@@ -71,9 +72,9 @@ contract Numero is ERC721 {
         if (balanceOf(msg.sender) < 9) {
             revert("Must have all 9 tokens");
         }
-        status = Status.ZeroCreated;
+        _status = Status.ZeroCreated;
         _safeMint(msg.sender, 0);
-        totalSupply++;
+        _totalSupply++;
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
@@ -96,11 +97,19 @@ contract Numero is ERC721 {
         );
     }
 
-    function checkStatus() public view returns (Status) {
-        return status;
-    }
-
     function _baseURI() internal pure override returns (string memory) {
         return "data:application/json;base64,";
+    }
+
+    function getOwner() external view returns (address) {
+        return _contractOwner;
+    }
+
+    function getTotalSupply() external view returns (uint256) {
+        return _totalSupply;
+    }
+
+    function checkStatus() public view returns (Status) {
+        return _status;
     }
 }
