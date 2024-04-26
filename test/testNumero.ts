@@ -25,22 +25,23 @@ describe("Numero", () => {
       const symbol = await numero.symbol();
       const status = await numero.checkStatus();
       const tokenId1 = await numero.tokenURI(1);
-      console.log(`tokenId1:${tokenId1}`);
+      // console.log(`tokenId1:${tokenId1}`);
       const baseUri = "data:application/json;base64,";
-      const tokenIdStr =
-        '{"name": "Numero","description":"An NFT that can be collected and create next NFT.","image":"1"}';
+      // const tokenIdStr =
+      //   '{"name": "Numero","description":"An NFT that can be collected and create next NFT.","image":"1"}';
       // const abiEncode = new AbiCoder();
       // const strToBase64 = abiEncode.encode(["string"], [tokenIdStr]);
-      // console.log(`strToBase64:${strToBase64}`);
-      const strAfBase64 = encodeBase64(tokenIdStr);
-      console.log(`strAfBase64:${strAfBase64}`);
+      //tokenIdBytes is abi.encodePacked variable
+      const tokenIdBytes =
+        "0x7b226e616d65223a20224e756d65726f222c226465736372697074696f6e223a22416e204e465420746861742063616e20626520636f6c6c656374656420616e6420637265617465206e657874204e46542e222c22696d616765223a2231227d";
+      const strAfBase64 = encodeBase64(tokenIdBytes);
       const encodeStrAfBase64 = baseUri + strAfBase64;
-      console.log(`encodeStrAfBase64:${encodeStrAfBase64}`);
       assert.equal(owner, deployer.address);
       assert.equal(totalSupply, 0);
       assert.equal(name, "Numero");
       assert.equal(symbol, "NMR");
       assert.equal(status, 0);
+      assert.equal(tokenId1, encodeStrAfBase64);
     });
   });
 });
