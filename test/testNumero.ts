@@ -43,5 +43,23 @@ describe("Numero", () => {
       assert.equal(status, 0);
       assert.equal(tokenId1, encodeStrAfBase64);
     });
+
+    describe("mintOriginNumber", async () => {
+      it("mintSuccess", async () => {
+        const numero = await getContract();
+        const deployer = (await ethers.getSigners())[0];
+        const ownerNumero = numero.connect(deployer);
+        await ownerNumero.mintOriginNumber();
+        const totalSupply = await numero.getTotalSupply();
+        const balanceOfOwner = await numero.balanceOf(deployer);
+        const ownerOfToken1 = await numero.ownerOf(1);
+        const ownerOfToken2 = await numero.ownerOf(2);
+
+        assert.equal(totalSupply, 2);
+        assert.equal(balanceOfOwner, 2);
+        assert.equal(ownerOfToken1, deployer.address);
+        assert.equal(ownerOfToken2, deployer.address);
+      });
+    });
   });
 });
